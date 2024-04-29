@@ -34,9 +34,60 @@ class BusinessModel:
             total_deposits += net_deposits
         return total_deposits
 
+    def calc_total_sages(self, month):
+        """
+        month is the month number
+        """
+        total_sages = self.sages_total
+        for i in range(month):
+            net_sages = total_sages * self.sages_average_yield
+            total_sages += net_sages
+        return total_sages
+
+    def calc_total_treasury_yields(self, month):
+        """
+        month is the month number
+        """
+        total_treasury_pol = self.treasury_pol_total
+        for i in range(month):
+            net_treasury_pol = total_treasury_pol * self.treasury_average_yield
+            total_treasury_pol += net_treasury_pol
+        return total_treasury_pol
+
+    def calc_buybacks(self, month):
+        """
+        month is the month number
+        """
+        total_treasury_pol = self.treasury_pol_total
+        total_treasury_pol_yields = self.calc_total_treasury_yields(month)
+        buybacks = total_treasury_pol_yields * self.buyback_rate_pct
+        return buybacks
+
+    def calc_lp_rewards(self, month):
+        """
+        month is the month number
+        """
+        total_credit_lines = self.lp_credit_lines
+        monthly_swap_pressure = self.lp_monthly_swap_pressure
+        expected_apr = self.lp_expected_apr
+        lp_rewards = total_credit_lines * monthly_swap_pressure * expected_apr
+        return lp_rewards
+
+    def calc_net_zero(self, month):
+        """
+        month is the month number
+        """
+        total_deposits = self.calc_total_deposits(month)
+        total_sages = self.calc_total_sages(month)
+        total_treasury_pol = self.calc_total_treasury_yields(month)
+        buybacks = self.calc_buybacks(month)
+        lp_rewards = self.calc_lp_rewards(month)
+        net_zero = total_deposits - total_sages - total_treasury_pol - buybacks - lp_rewards
+        return net_zero
+
     def run(self):
-        pass
+        self._net_zero = self.calc_net_zero(12)        
 
     @property
     def score(self):
-        return random.random()
+        return self._net_zero
