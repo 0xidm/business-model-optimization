@@ -39,6 +39,8 @@ class BusinessModel:
         month is the month number
         """
         total_sages = self.sages_total
+        total_deposits = self.calc_total_deposits(month)
+        
         for i in range(month):
             net_sages = total_sages * self.sages_average_yield
             total_sages += net_sages
