@@ -26,17 +26,14 @@ def prepare_tasks():
             for growth_pct in range(0, 10, 2):
                 this_task = [
                     iteration,
-                    starting_deposits,
-                    growth_pct,
-                    starting_pcl,
-                    average_user_yield,
-                    starting_pol,
-                    average_protocol_yield,
-                    protocol_fee_pct,
-                    buyback_rate_pct,
-                    starting_credit_lines,
-                    monthly_swap_pressure,
-                    expected_apr,
+                    starting_deposits, # 1_000_000, 1_500_000, 2_500_000, 5_000_000
+                    growth_pct, # 2%-15%, 1% increments
+                    average_user_yield, # 5%-20, 1% increments
+                    starting_pol, # 0, 250_000, 500_000, 1_000_000, 2_000_000, 5_000_000
+                    average_protocol_yield, # 10%-30%, 5% increments
+                    protocol_fee_pct, # 5%-25%, 5% increments
+                    buyback_rate_pct, # 10%-60%, 10% increments
+                    expected_apr, # 4%-20%
                 ]
                 tasks.append(this_task)
     return tasks
