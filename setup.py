@@ -7,7 +7,7 @@ setup(
     name='business-model-optimization',
     description="business model optimization",
     packages=["savvy"],
-    scripts=[],
+    scripts=["scripts/sim.py"],
     include_package_data=True,
     keywords='',
     author="idm",

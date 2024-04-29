@@ -22,12 +22,21 @@ def run_one(iteration, param1, param2):
 def prepare_tasks():
     tasks = []
     for iteration in range(0, 20):
-        for param1 in range(0, 50, 5):
-            for param2 in range(0, 10, 2):
+        for starting_deposits in range(0, 50, 5):
+            for growth_pct in range(0, 10, 2):
                 this_task = [
                     iteration,
-                    param1,
-                    param2,
+                    starting_deposits,
+                    growth_pct,
+                    starting_pcl,
+                    average_user_yield,
+                    starting_pol,
+                    average_protocol_yield,
+                    protocol_fee_pct,
+                    buyback_rate_pct,
+                    starting_credit_lines,
+                    monthly_swap_pressure,
+                    expected_apr,
                 ]
                 tasks.append(this_task)
     return tasks

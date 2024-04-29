@@ -1,0 +1,19 @@
+{
+    "python.pythonPath": ".python/bin/python",
+    "files.exclude": {
+        "**/__pycache__/": true,
+        "**/build/": true,
+        "**/.build/": true,
+        "**/.cache/": true,
+        "**/cache/": true,
+        "**/dist/": true,
+        "**/*.egg-info/": true,
+        "**/.vscode/": true,
+        "**/.pytest_cache/": true,
+        "**/.python/": true,
+        "**/.node/": true
+    },
+    "search.exclude": {
+        "**/build/": true
+    }
+}
