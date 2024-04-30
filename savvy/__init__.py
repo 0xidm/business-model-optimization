@@ -126,8 +126,8 @@ class BusinessModel:
         return self.calc_buybacks(month) - self.calc_lp_rewards(month)
 
     def run(self):
-        self._net_zero = self.calc_net_zero(12)        
+        self._net_zero = self.calc_net_zero(12)
 
     @property
-    def score(self):
+    def net_zero(self):
         return self._net_zero
