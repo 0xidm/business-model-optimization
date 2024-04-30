@@ -11,81 +11,119 @@ logger.setLevel(logging.ERROR)
 
 
 class BusinessModel:
-    def __init__(self, starting_deposits, growth_pct, starting_pcl, average_user_yield, starting_pol, average_protocol_yield, protocol_fee_pct, buyback_rate_pct, starting_credit_lines, monthly_swap_pressure, expected_apr):
-        self.deposits_total = starting_deposits
-        self.deposits_growth_pct = growth_pct
-        self.sages_total = starting_pcl
-        self.sages_average_yield = average_user_yield
-        self.treasury_pol_total = starting_pol
-        self.treasury_average_yield = average_protocol_yield
-        self.treasury_fee_pct = protocol_fee_pct
+    def __init__(self, starting_deposits, growth_pct, average_user_yield, starting_pol, average_protocol_yield, protocol_fee_pct, buyback_rate_pct, expected_apr):
+        self.starting_deposits = starting_deposits
+        self.growth_pct = growth_pct
+        self.average_user_yield = average_user_yield
+        self.starting_pol = starting_pol
+        self.average_protocol_yield = average_protocol_yield
+        self.protocol_fee_pct = protocol_fee_pct
         self.buyback_rate_pct = buyback_rate_pct
-        self.lp_credit_lines = starting_credit_lines
-        self.lp_monthly_swap_pressure = monthly_swap_pressure
         self.lp_expected_apr = expected_apr
+
+        # static values
+        self.periods_in_year = 12
+        self.starting_credit_lines = 500_000
+        self.credit_utilization = 0.5
+        self.monthly_swap_pressure = 1.0
 
     def calc_total_deposits(self, month):
         """
         month is the month number
         """
-        total_deposits = self.deposits_total
+        total_deposits = self.starting_deposits
         for i in range(month):
-            net_deposits = total_deposits * self.deposits_growth_pct
+            net_deposits = total_deposits * self.growth_pct
             total_deposits += net_deposits
         return total_deposits
+
+    def calc_net_new_deposits(self, month):
+        """
+        month is the month number
+        """
+        if month <= 0:
+            return 0
+
+        total_deposits = self.starting_deposits
+        for i in range(month):
+            net_deposits = total_deposits * self.growth_pct
+            total_deposits += net_deposits
+        return net_deposits
 
     def calc_total_sages(self, month):
         """
         month is the month number
         """
-        total_sages = self.sages_total
-        total_deposits = self.calc_total_deposits(month)
-        
+        total_sages = 0
         for i in range(month):
-            net_sages = total_sages * self.sages_average_yield
-            total_sages += net_sages
+            deposits_last_month = self.calc_total_deposits(month-1)
+            customer_yield = deposits_last_month * self.average_user_yield * (1-self.protocol_fee_pct) / self.periods_in_year
+            total_sages += customer_yield
         return total_sages
 
-    def calc_total_treasury_yields(self, month):
+    def calc_net_new_pol(self, month):
         """
         month is the month number
         """
-        total_treasury_pol = self.treasury_pol_total
+        if month <= 0:
+            return 0
+
+        total_treasury_pol = self.starting_pol
+        total_treasury_previous_month = total_treasury_pol
+
         for i in range(month):
-            net_treasury_pol = total_treasury_pol * self.treasury_average_yield
-            total_treasury_pol += net_treasury_pol
+            protocol_fee_from_deposits = self.calc_total_deposits(month-1) * self.average_user_yield * self.protocol_fee_pct / self.periods_in_year
+            treasury_yield_on_yield = total_treasury_previous_month * self.average_protocol_yield / self.periods_in_year
+            sage_yield_on_yield = self.calc_total_sages(month-1) * self.average_protocol_yield / self.periods_in_year
+            net_new = protocol_fee_from_deposits + treasury_yield_on_yield + sage_yield_on_yield
+            total_treasury_pol += net_new
+            total_treasury_previous_month = total_treasury_pol
+
+        return net_new
+
+    def calc_total_treasury(self, month):
+        """
+        month is the month number
+        """
+        if month <= 0:
+            return 0
+
+        total_treasury_pol = self.starting_pol
+        for i in range(month):
+            total_treasury_pol += self.calc_net_new_pol(month)
+
         return total_treasury_pol
 
     def calc_buybacks(self, month):
         """
         month is the month number
         """
-        total_treasury_pol = self.treasury_pol_total
-        total_treasury_pol_yields = self.calc_total_treasury_yields(month)
-        buybacks = total_treasury_pol_yields * self.buyback_rate_pct
+        buybacks = 0
+        for i in range(month):
+            buybacks_this_month = self.calc_net_new_pol(month) * self.buyback_rate_pct
+            buybacks += buybacks_this_month
         return buybacks
 
     def calc_lp_rewards(self, month):
         """
         month is the month number
         """
-        total_credit_lines = self.lp_credit_lines
-        monthly_swap_pressure = self.lp_monthly_swap_pressure
-        expected_apr = self.lp_expected_apr
-        lp_rewards = total_credit_lines * monthly_swap_pressure * expected_apr
-        return lp_rewards
+        total_credit_lines = self.starting_credit_lines
+        cumulative_credit_lines = 0
+
+        for i in range(month):
+            net_new_deposits = self.calc_net_new_deposits(month)
+            new_credit_lines = net_new_deposits * self.credit_utilization
+            monthly_swap_pressure = net_new_deposits * self.monthly_swap_pressure
+            cumulative_credit_lines += new_credit_lines
+
+        return new_credit_lines * self.lp_expected_apr / self.periods_in_year
 
     def calc_net_zero(self, month):
         """
         month is the month number
         """
-        total_deposits = self.calc_total_deposits(month)
-        total_sages = self.calc_total_sages(month)
-        total_treasury_pol = self.calc_total_treasury_yields(month)
-        buybacks = self.calc_buybacks(month)
-        lp_rewards = self.calc_lp_rewards(month)
-        net_zero = total_deposits - total_sages - total_treasury_pol - buybacks - lp_rewards
-        return net_zero
+        return self.calc_buybacks(month) - self.calc_lp_rewards(month)
 
     def run(self):
         self._net_zero = self.calc_net_zero(12)        
