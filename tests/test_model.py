@@ -45,6 +45,8 @@ def test_calc_net_zero(business_model):
     assert business_model.calc_net_zero(month=1) == -4_700
     assert business_model.calc_net_zero(month=2) == pytest.approx(-5_150, 10)
     assert business_model.calc_net_zero(month=3) == pytest.approx(-5_621, 10)
+    assert business_model.calc_net_zero(month=12) == pytest.approx(-11_516, 10)
+    assert business_model.calc_net_zero(month=12) == pytest.approx(-12_618, 10)
 
 def test_calc_cumulative_base_asset_required(business_model):
     assert business_model.calc_cumulative_base_asset_required(month=1) == 500_000
