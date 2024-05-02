@@ -74,4 +74,5 @@ def business_model():
         protocol_fee_pct=0.1,
         buyback_rate_pct=0.3,
         expected_apr=0.12,
+        monthly_swap_pressure=1.0,
     )

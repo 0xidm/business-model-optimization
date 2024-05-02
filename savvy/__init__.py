@@ -11,7 +11,7 @@ logger.setLevel(logging.ERROR)
 
 
 class BusinessModel:
-    def __init__(self, starting_deposits, growth_pct, average_user_yield, starting_pol, average_protocol_yield, protocol_fee_pct, buyback_rate_pct, expected_apr):
+    def __init__(self, starting_deposits, growth_pct, average_user_yield, starting_pol, average_protocol_yield, protocol_fee_pct, buyback_rate_pct, expected_apr, monthly_swap_pressure):
         self.starting_deposits = starting_deposits
         self.growth_pct = growth_pct
         self.average_user_yield = average_user_yield
@@ -25,7 +25,7 @@ class BusinessModel:
         self.periods_in_year = 12
         self.starting_credit_lines = 500_000
         self.credit_utilization = 0.5
-        self.monthly_swap_pressure = 1.0
+        self.monthly_swap_pressure = monthly_swap_pressure
 
     def calc_total_deposits(self, month):
         """
@@ -169,9 +169,24 @@ class BusinessModel:
         """
         return self.calc_buybacks(month) - self.calc_cost_of_lp(month)
 
+    def find_break_even_month(self):
+        """
+        Find the month where net zero is reached
+        """
+        for month in range(1, 36+1):
+            net_zero = self.calc_net_zero(month)
+            if net_zero >= 0:
+                return month
+        return -1
+
     def run(self):
         self._net_zero = self.calc_net_zero(12)
+        self._break_even_month = self.find_break_even_month()
 
     @property
     def net_zero(self):
         return self._net_zero
+
+    @property
+    def break_even_month(self):
+        return self._break_even_month

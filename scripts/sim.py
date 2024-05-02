@@ -20,26 +20,28 @@ def prepare_tasks():
     tasks = []
     print("Generating tasks")
     for iteration in [0]: # there is no variability so we can run a single iteration
-        for starting_deposits in [1_000_000, 1_500_000]: #, 2_500_000, 5_000_000:
-            for growth_pct in [x / 100.0 for x in range(2, 16, 2)]:
-                for average_user_yield in [x / 100.0 for x in range(5, 20, 5)]:
-                    for starting_pol in [0, 250_000, 500_000, 1_000_000]: #, 2_000_000, 5_000_000:
-                        for average_protocol_yield in [x / 100.0 for x in range(10, 30, 5)]:
-                            for protocol_fee_pct in [x / 100.0 for x in range(5, 25, 5)]:
-                                for buyback_rate_pct in [x / 100.0 for x in range(10, 60, 10)]:
-                                    for expected_apr in [x / 100.0 for x in range(4, 20, 2)]:
-                                        this_task = [
-                                            iteration,
-                                            starting_deposits,
-                                            growth_pct,
-                                            average_user_yield,
-                                            starting_pol,
-                                            average_protocol_yield,
-                                            protocol_fee_pct,
-                                            buyback_rate_pct,
-                                            expected_apr,
-                                        ]
-                                        tasks.append(this_task)
+        for starting_deposits in [1_000_000]: #1_500_000, 2_500_000, 5_000_000:
+            for growth_pct in [x / 100.0 for x in range(2, 10, 1)]:
+                for average_user_yield in [x / 100.0 for x in range(5, 20+1, 5)]:
+                    for starting_pol in [0, 100_000, 250_000]: #, 2_000_000, 5_000_000:
+                        for average_protocol_yield in [x / 100.0 for x in range(5, 25+1, 5)]:
+                            for protocol_fee_pct in [x / 100.0 for x in range(10, 25+1, 5)]:
+                                for buyback_rate_pct in [x / 100.0 for x in range(0, 60+1, 10)]:
+                                    for expected_apr in [x / 100.0 for x in range(4, 20+1, 2)]:
+                                        for monthly_swap_pressure in [x / 100.0 for x in range(60, 100+1, 20)]:
+                                            this_task = [
+                                                iteration,
+                                                starting_deposits,
+                                                growth_pct,
+                                                average_user_yield,
+                                                starting_pol,
+                                                average_protocol_yield,
+                                                protocol_fee_pct,
+                                                buyback_rate_pct,
+                                                expected_apr,
+                                                monthly_swap_pressure,
+                                            ]
+                                            tasks.append(this_task)
     print(f"Generated {len(tasks)} tasks")
     return tasks
 
@@ -59,6 +61,7 @@ def run_all(tasks):
         "protocol_fee_pct",
         "buyback_rate_pct",
         "expected_apr",
+        "monthly_swap_pressure"
     ]
 
     with Pool(processes=7) as pool:
@@ -66,7 +69,7 @@ def run_all(tasks):
         for savvy_possibility, param in zip(results, tasks):
             result = {
                 **dict(zip(variables, param)),
-                "net_zero": savvy_possibility.net_zero,
+                "break_even_month": savvy_possibility.break_even_month,
             }
 
             results_accumulator.append(result)
@@ -93,9 +96,14 @@ def load(filename):
     return df
 
 def plot(df, filename):
-    df = df[ df["net_zero"] > 0 ]
+    # df = df[ df["net_zero"] > 0 ]
+    df = df[ df["break_even_month"] >= 6 ]
+    del(df['iteration'])
+    # breakpoint()
+    # how many rows in df
+    print(f"keeping results: {df.shape[0]}")
     h = hip.Experiment.from_dataframe(df)
-    h.parameters_definition["net_zero"].type = hip.ValueType.NUMERIC_LOG
+    # h.parameters_definition["net_zero"].type = hip.ValueType.NUMERIC_LOG
     h.to_html(filename)
 
 def main():
