@@ -108,4 +108,8 @@ def sim(num_processes=7):
 
 
 if __name__ == "__main__":
-    sim()
+    # parse cli arguments
+    num_processes = 7
+    if len(sys.argv) > 1:
+        num_processes = int(sys.argv[1])
+    sim(num_processes)
