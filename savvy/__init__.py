@@ -17,7 +17,7 @@ logger.setLevel(logging.ERROR)
 
 
 class BusinessModel:
-    def __init__(self, starting_deposits, growth_pct, average_user_yield, starting_pol, average_protocol_yield, protocol_fee_pct, buyback_rate_pct, lp_expected_apr, monthly_swap_pressure_pct, starting_credit_lines=500_000, credit_utilization=0.5, periods_in_year=12):
+    def __init__(self, starting_deposits, growth_pct, average_user_yield, starting_pol, average_protocol_yield, protocol_fee_pct, buyback_rate_pct, lp_expected_apr, monthly_swap_pressure_pct, starting_credit_lines=500_000, credit_utilization=0.5, periods_in_year=12, periods_in_simulation=48):
 
         self.starting_deposits = starting_deposits
         self.growth_pct = growth_pct
@@ -31,12 +31,13 @@ class BusinessModel:
         self.periods_in_year = periods_in_year
         self.starting_credit_lines = starting_credit_lines
         self.credit_utilization = credit_utilization
+        self.periods_in_simulation = periods_in_simulation
 
         self.df = pd.DataFrame()
     
     def run(self):
         ts = []
-        for month in range(1, 72+1):
+        for month in range(1, self.periods_in_simulation+1):
             ts.append([month, self.surplus(month)])
 
         result = stats.linregress(ts)
@@ -45,7 +46,7 @@ class BusinessModel:
 
     def plot(self, filename="surplus.png"):
         ts = []
-        for month in range(1, 36+1):
+        for month in range(1, self.periods_in_simulation+1):
             ts.append([month, self.surplus(month)])
         df = pd.DataFrame(ts, columns=['month', 'surplus'])
         # create a plot and write to png
@@ -65,7 +66,7 @@ class BusinessModel:
         """
         Find the month where net zero is reached
         """
-        for month in range(3, 36+1):
+        for month in range(3, self.periods_in_simulation+1):
             if self.surplus(month) >= 0:
                 return month
         return -1

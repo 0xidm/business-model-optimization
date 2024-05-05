@@ -26,15 +26,15 @@ from savvy import BusinessModel
 search_params = {
     "iteration": [0],
     "starting_deposits": [1_000_000],
-    "starting_pol": [0, 100_000, 250_000, 500_000, 1_000_000],
+    "starting_pol": [0, 100_000, 250_000, 500_000],
     "protocol_fee_pct": [x / 100.0 for x in range(10, 50+1, 5)],
     "buyback_rate_pct": [x / 100.0 for x in range(0, 100+1, 10)],
     "credit_utilization": [0.4, 0.5, 0.6],
     "average_user_yield": [x / 100.0 for x in range(5, 20+1, 5)],
     "average_protocol_yield": [x / 100.0 for x in range(5, 20+1, 5)],
     "monthly_swap_pressure_pct": [x / 100.0 for x in range(0, 100+1, 20)],
-    "expected_apr": [x / 100.0 for x in range(8, 16+1, 2)],
-    "growth_pct": [x / 100.0 for x in range(2, 20, 2)],
+    "expected_apr": [x / 100.0 for x in range(9, 16+1, 2)],
+    "growth_pct": [x / 100.0 for x in range(1, 15, 1)],
 }
 
 def run_one(iteration, *args):
