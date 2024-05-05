@@ -1,11 +1,11 @@
 sim:
-	.python/bin/python3 scripts/sim.py
+	.python/bin/python3 scripts/sim.py 7
 
 merge:
-	.python/bin/python scripts/merge.py
+	.python/bin/python scripts/merge.py 20240505-163334
 
 hiplot:
-	.python/bin/python scripts/create_hiplot.py
+	.python/bin/python scripts/create_hiplot.py 20240505-163334
 
 plot:
 	.python/bin/python scripts/plot.py

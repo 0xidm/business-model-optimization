@@ -26,7 +26,16 @@
 }
 ```
 
-## Pages
+## Install
+
+```bash
+apt install -y make python3.12-venv
+git clone https://github.com/idm-savvy/business-model-optimization.git
+cd business-model-optimization
+make init install sim
+```
+
+## Github Pages
 
 - repo must be publicly visible
 - Source: Deploy from a branch
