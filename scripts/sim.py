@@ -59,7 +59,7 @@ def run_all(tasks):
 
     variables = list(search_params.keys())
 
-    # tasks = tasks[:1000]
+    tasks = tasks[:1000]
 
     with Pool(processes=7) as pool:
         results = pool.starmap(run_one, tasks)
@@ -68,6 +68,7 @@ def run_all(tasks):
                 **dict(zip(variables, param)),
                 "net_zero_12_months": savvy_possibility.net_zero,
                 "break_even_month": savvy_possibility.break_even_month,
+                "slope": savvy_possibility.slope,
             }
 
             results_accumulator.append(result)
@@ -98,7 +99,8 @@ def plot(df, filename):
         del(df['iteration'])
 
     # df = df[ df["net_zero_12_months"] > 0 ]
-    df = df[ df["break_even_month"] >= 6 ]
+    # df = df[ df["break_even_month"] >= 6 ]
+    df = df[ df["slope"] > 0]
     # breakpoint()
     # how many rows in df
     print(f"keeping results: {df.shape[0]}")
@@ -108,13 +110,13 @@ def plot(df, filename):
     h.to_html(filename)
 
 def main():
-#     tasks = prepare_tasks()
-#     results_accumulator = run_all(tasks)
-#     df = convert_to_dataframe(results_accumulator)
+    tasks = prepare_tasks()
+    results_accumulator = run_all(tasks)
+    df = convert_to_dataframe(results_accumulator)
 
     path = os.path.abspath('.')
-    df = load(os.path.join(path, "var/results.csv.gz"))
-    # save(df, filename=os.path.join(path, "var/results.csv.gz"))
+    # df = load(os.path.join(path, "var/results.csv.gz"))
+    save(df, filename=os.path.join(path, "var/results.csv.gz"))
     plot(df, filename=os.path.join(path, "docs/parameters.html"))
 
 if __name__ == "__main__":

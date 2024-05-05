@@ -1,4 +1,5 @@
 import pandas as pd
+from scipy import stats
 
 import random
 import logging
@@ -35,6 +36,12 @@ class BusinessModel:
         self.df = pd.DataFrame()
     
     def run(self):
+        ts = []
+        for month in range(1, 36+1):
+            ts.append([month, self.surplus(month)])
+        result = stats.linregress(ts)
+
+        self.slope = result.slope
         self.net_zero = self.surplus(12)
         self._break_even_month = self.break_even_month
 
