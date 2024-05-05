@@ -1,11 +1,17 @@
+sim:
+	.python/bin/python3 scripts/sim.py
+
+merge:
+	.python/bin/python scripts/merge.py
+
+hiplot:
+	.python/bin/python scripts/create_hiplot.py
+
 plot:
 	.python/bin/python scripts/plot.py
 
-sim:
-	.python/bin/python3 ./scripts/sim.py
-
 test:
-	.python/bin/pytest ./tests
+	.python/bin/pytest tests
 
 install:
 	.python/bin/pip install -e .

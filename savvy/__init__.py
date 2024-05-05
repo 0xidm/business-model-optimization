@@ -38,13 +38,12 @@ class BusinessModel:
     
     def run(self):
         ts = []
-        for month in range(1, 36+1):
+        for month in range(1, 72+1):
             ts.append([month, self.surplus(month)])
-        result = stats.linregress(ts)
 
+        result = stats.linregress(ts)
         self._slope = result.slope
-        self.net_zero = self.surplus(12)
-        self._break_even_month = self.break_even_month
+        self._break_even_month = self.find_break_even_month()
 
     def plot(self, filename="surplus.png"):
         ts = []
@@ -60,8 +59,11 @@ class BusinessModel:
         return self._slope
 
     @property
-    @functools.cache
     def break_even_month(self):
+        return self._break_even_month
+
+    @functools.cache
+    def find_break_even_month(self):
         """
         Find the month where net zero is reached
         """
