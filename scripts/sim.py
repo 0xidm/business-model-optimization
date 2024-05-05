@@ -29,12 +29,12 @@ search_params = {
     "starting_deposits": [1_000_000],
     "growth_pct": [x / 100.0 for x in range(2, 10, 1)],
     "average_user_yield": [x / 100.0 for x in range(5, 20+1, 5)],
-    "starting_pol": [0, 100_000, 250_000, 500_000, 1_000_000],
-    "average_protocol_yield": [x / 100.0 for x in range(5, 25+1, 5)],
-    "protocol_fee_pct": [x / 100.0 for x in range(10, 25+1, 5)],
-    "buyback_rate_pct": [x / 100.0 for x in range(0, 60+1, 10)],
-    "expected_apr": [x / 100.0 for x in range(4, 20+1, 2)],
-    "monthly_swap_pressure_pct": [x / 100.0 for x in range(60, 100+1, 20)],
+    "starting_pol": [0, 100_000, 250_000, 500_000, 1_000_000, 2_000_000],
+    "average_protocol_yield": [x / 100.0 for x in range(5, 20+1, 5)],
+    "protocol_fee_pct": [x / 100.0 for x in range(10, 50+1, 5)],
+    "buyback_rate_pct": [x / 100.0 for x in range(0, 60+1, 5)],
+    "expected_apr": [x / 100.0 for x in range(8, 16+1, 1)],
+    "monthly_swap_pressure_pct": [x / 100.0 for x in range(40, 100+1, 20)],
 }
 
 def run_one(iteration, *args):
@@ -42,7 +42,13 @@ def run_one(iteration, *args):
     savvy_possibility = BusinessModel(*args)
     # print(savvy_possibility)
     savvy_possibility.run()
-    return savvy_possibility
+    result = {
+        "net_zero_12_months": savvy_possibility.net_zero,
+        "break_even_month": savvy_possibility.break_even_month,
+        "slope": savvy_possibility.slope,
+    }
+    del savvy_possibility
+    return result
 
 def prepare_tasks():
     keys, values = zip(*search_params.items())
@@ -59,16 +65,16 @@ def run_all(tasks):
 
     variables = list(search_params.keys())
 
-    tasks = tasks[:1000]
+    # tasks = tasks[:100]
 
     with Pool(processes=7) as pool:
         results = pool.starmap(run_one, tasks)
         for savvy_possibility, param in zip(results, tasks):
             result = {
                 **dict(zip(variables, param)),
-                "net_zero_12_months": savvy_possibility.net_zero,
-                "break_even_month": savvy_possibility.break_even_month,
-                "slope": savvy_possibility.slope,
+                # "net_zero_12_months": savvy_possibility["net_zero_12_months"],
+                "break_even_month": savvy_possibility["break_even_month"],
+                "slope": savvy_possibility["slope"],
             }
 
             results_accumulator.append(result)
@@ -91,7 +97,8 @@ def save(df, filename):
 
 def load(filename):
     df = pd.read_csv(filename)
-    del df['iteration']
+    if 'iteration' in df:
+        del df['iteration']
     return df
 
 def plot(df, filename):
@@ -99,7 +106,7 @@ def plot(df, filename):
         del(df['iteration'])
 
     # df = df[ df["net_zero_12_months"] > 0 ]
-    # df = df[ df["break_even_month"] >= 6 ]
+    df = df[ df["break_even_month"] >= 6 ]
     df = df[ df["slope"] > 0]
     # breakpoint()
     # how many rows in df
@@ -110,13 +117,22 @@ def plot(df, filename):
     h.to_html(filename)
 
 def main():
+    results_accumulator = []
     tasks = prepare_tasks()
-    results_accumulator = run_all(tasks)
+
+    # split tasks into chunks of 100k and run sequentially
+    task_chunks = [tasks[x:x+100_000] for x in range(0, len(tasks), 100_000)]
+    for i, chunk in enumerate(task_chunks):
+        print(f"Running chunk {i+1}")
+        results = run_all(chunk)
+        results_accumulator.extend(results)
+
     df = convert_to_dataframe(results_accumulator)
 
     path = os.path.abspath('.')
-    # df = load(os.path.join(path, "var/results.csv.gz"))
     save(df, filename=os.path.join(path, "var/results.csv.gz"))
+    # df = load(os.path.join(path, "var/results.csv.gz"))
+    # breakpoint()
     plot(df, filename=os.path.join(path, "docs/parameters.html"))
 
 if __name__ == "__main__":

@@ -88,10 +88,13 @@ def test_surplus(business_model):
     assert business_model.surplus(month=11) == pytest.approx(733, 10)
     assert business_model.surplus(month=12) == pytest.approx(683, 10)
 
+def test_plot(business_model):
+    business_model.run()
+    business_model.plot('var/surplus.png')
 
 @pytest.fixture
 def business_model():
-    return BusinessModel({
+    return BusinessModel(**{
         "starting_deposits": 1_000_000,
         "growth_pct": 0.03,
         "average_user_yield": 0.12,
@@ -99,6 +102,6 @@ def business_model():
         "average_protocol_yield": 0.2,
         "protocol_fee_pct": 0.1,
         "buyback_rate_pct": 0.4,
-        "expected_apr": 0.14,
-        "monthly_swap_pressure": 1.0,
+        "lp_expected_apr": 0.14,
+        "monthly_swap_pressure_pct": 1.0,
     })

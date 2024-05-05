@@ -1,4 +1,7 @@
-run:
+plot:
+	.python/bin/python scripts/plot.py
+
+sim:
 	.python/bin/python3 ./scripts/sim.py
 
 test:

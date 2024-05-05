@@ -21,6 +21,8 @@ setup(
         "hiplot",
         "pandas",
         "jupyterlab",
+        "scipy",
+        "matplotlib",
     ],
     license='proprietary',
     zip_safe=False,

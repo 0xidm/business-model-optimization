@@ -1,9 +1,10 @@
-import pandas as pd
-from scipy import stats
-
 import random
 import logging
 import functools
+
+import pandas as pd
+from scipy import stats
+import matplotlib.pyplot as plt
 
 from rich.logging import RichHandler
 from rich.console import Console
@@ -41,9 +42,22 @@ class BusinessModel:
             ts.append([month, self.surplus(month)])
         result = stats.linregress(ts)
 
-        self.slope = result.slope
+        self._slope = result.slope
         self.net_zero = self.surplus(12)
         self._break_even_month = self.break_even_month
+
+    def plot(self, filename="surplus.png"):
+        ts = []
+        for month in range(1, 36+1):
+            ts.append([month, self.surplus(month)])
+        df = pd.DataFrame(ts, columns=['month', 'surplus'])
+        # create a plot and write to png
+        df.plot(x='month', y='surplus', kind='line')
+        plt.savefig(filename)
+
+    @property
+    def slope(self):
+        return self._slope
 
     @property
     @functools.cache
