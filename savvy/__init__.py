@@ -15,16 +15,17 @@ logger.setLevel(logging.ERROR)
 
 
 class BusinessModel:
-    def __init__(self, parameters):
-        self.starting_deposits = parameters['starting_deposits']
-        self.growth_pct = parameters['growth_pct']
-        self.average_user_yield = parameters['average_user_yield']
-        self.starting_pol = parameters['starting_pol']
-        self.average_protocol_yield = parameters['average_protocol_yield']
-        self.protocol_fee_pct = parameters['protocol_fee_pct']
-        self.buyback_rate_pct = parameters['buyback_rate_pct']
-        self.lp_expected_apr = parameters['expected_apr']
-        self.monthly_swap_pressure_pct = parameters['monthly_swap_pressure']
+    def __init__(self, starting_deposits, growth_pct, average_user_yield, starting_pol, average_protocol_yield, protocol_fee_pct, buyback_rate_pct, lp_expected_apr, monthly_swap_pressure_pct):
+
+        self.starting_deposits = starting_deposits # parameters['starting_deposits']
+        self.growth_pct = growth_pct # parameters['growth_pct']
+        self.average_user_yield = average_user_yield # parameters['average_user_yield']
+        self.starting_pol = starting_pol # parameters['starting_pol']
+        self.average_protocol_yield = average_protocol_yield # parameters['average_protocol_yield']
+        self.protocol_fee_pct = protocol_fee_pct # parameters['protocol_fee_pct']
+        self.buyback_rate_pct = buyback_rate_pct # parameters['buyback_rate_pct']
+        self.lp_expected_apr = lp_expected_apr # parameters['expected_apr']
+        self.monthly_swap_pressure_pct = monthly_swap_pressure_pct # parameters['monthly_swap_pressure']
 
         # static values
         self.periods_in_year = 12
@@ -33,11 +34,20 @@ class BusinessModel:
 
         self.df = pd.DataFrame()
     
-    def calculate(self):
-        self.df = pd.DataFrame()
-        for month in range(1, 13):
-            total_deposits = self.calc_total_deposits(month)
-            net_new_deposits = self.calc_net_new_deposits(month)
+    def run(self):
+        self.net_zero = self.surplus(12)
+        self._break_even_month = self.break_even_month
+
+    @property
+    @functools.cache
+    def break_even_month(self):
+        """
+        Find the month where net zero is reached
+        """
+        for month in range(3, 36+1):
+            if self.surplus(month) >= 0:
+                return month
+        return -1
 
     @functools.cache
     def total_deposits(self, month):
