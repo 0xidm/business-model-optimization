@@ -1,5 +1,6 @@
 # Savvy Business Model Optimization
 
+- https://idm-savvy.github.io/business-model-optimization/result-20240505-163334.html
 - https://idm-savvy.github.io/business-model-optimization/regression.html
 - https://idm-savvy.github.io/business-model-optimization/break-even-month.html
 - https://idm-savvy.github.io/business-model-optimization/profitable-in-12-months.html
