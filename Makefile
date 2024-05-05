@@ -18,4 +18,4 @@ install:
 
 init:
 	mkdir -p var
-	python3.10 -m venv .python
+	python3 -m venv .python

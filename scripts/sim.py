@@ -26,20 +26,19 @@ from savvy import BusinessModel
 search_params = {
     "iteration": [0],
     "starting_deposits": [1_000_000],
-    "growth_pct": [x / 100.0 for x in range(1, 30, 2)],
-    "average_user_yield": [x / 100.0 for x in range(5, 20+1, 5)],
-    "starting_pol": [0, 50_000, 100_000, 250_000, 500_000],
-    "average_protocol_yield": [x / 100.0 for x in range(5, 20+1, 5)],
+    "starting_pol": [0, 100_000, 250_000, 500_000, 1_000_000],
     "protocol_fee_pct": [x / 100.0 for x in range(10, 50+1, 5)],
-    "buyback_rate_pct": [x / 100.0 for x in range(0, 100+1, 5)],
+    "buyback_rate_pct": [x / 100.0 for x in range(0, 100+1, 10)],
+    "credit_utilization": [0.4, 0.5, 0.6],
+    "average_user_yield": [x / 100.0 for x in range(5, 20+1, 5)],
+    "average_protocol_yield": [x / 100.0 for x in range(5, 20+1, 5)],
+    "monthly_swap_pressure_pct": [x / 100.0 for x in range(0, 100+1, 20)],
     "expected_apr": [x / 100.0 for x in range(8, 16+1, 2)],
-    "monthly_swap_pressure_pct": [x / 100.0 for x in range(0, 100+1, 10)],
+    "growth_pct": [x / 100.0 for x in range(2, 20, 2)],
 }
 
 def run_one(iteration, *args):
-    # print(list(zip(search_params.keys(), args)))
     savvy_possibility = BusinessModel(*args)
-    # print(savvy_possibility)
     savvy_possibility.run()
     result = {
         "break_even_month": savvy_possibility.break_even_month,
@@ -50,7 +49,6 @@ def run_one(iteration, *args):
 
 def prepare_tasks():
     keys, values = zip(*search_params.items())
-    # permutations = [dict(zip(keys, v)) for v in itertools.product(*values)]
     permutations = [v for v in itertools.product(*values)]
     print(f"Generated {len(permutations):_} tasks")
     return permutations
@@ -66,7 +64,6 @@ def run_all(tasks):
         for savvy_possibility, param in zip(results, tasks):
             result = {
                 **dict(zip(variables, param)),
-                # "net_zero_12_months": savvy_possibility["net_zero_12_months"],
                 "break_even_month": savvy_possibility["break_even_month"],
                 "slope": savvy_possibility["slope"],
             }

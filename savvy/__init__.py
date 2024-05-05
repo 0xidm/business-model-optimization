@@ -17,22 +17,20 @@ logger.setLevel(logging.ERROR)
 
 
 class BusinessModel:
-    def __init__(self, starting_deposits, growth_pct, average_user_yield, starting_pol, average_protocol_yield, protocol_fee_pct, buyback_rate_pct, lp_expected_apr, monthly_swap_pressure_pct):
+    def __init__(self, starting_deposits, growth_pct, average_user_yield, starting_pol, average_protocol_yield, protocol_fee_pct, buyback_rate_pct, lp_expected_apr, monthly_swap_pressure_pct, starting_credit_lines=500_000, credit_utilization=0.5, periods_in_year=12):
 
-        self.starting_deposits = starting_deposits # parameters['starting_deposits']
-        self.growth_pct = growth_pct # parameters['growth_pct']
-        self.average_user_yield = average_user_yield # parameters['average_user_yield']
-        self.starting_pol = starting_pol # parameters['starting_pol']
-        self.average_protocol_yield = average_protocol_yield # parameters['average_protocol_yield']
-        self.protocol_fee_pct = protocol_fee_pct # parameters['protocol_fee_pct']
-        self.buyback_rate_pct = buyback_rate_pct # parameters['buyback_rate_pct']
-        self.lp_expected_apr = lp_expected_apr # parameters['expected_apr']
-        self.monthly_swap_pressure_pct = monthly_swap_pressure_pct # parameters['monthly_swap_pressure']
-
-        # static values
-        self.periods_in_year = 12
-        self.starting_credit_lines = 500_000
-        self.credit_utilization = 0.5
+        self.starting_deposits = starting_deposits
+        self.growth_pct = growth_pct
+        self.average_user_yield = average_user_yield
+        self.starting_pol = starting_pol
+        self.average_protocol_yield = average_protocol_yield
+        self.protocol_fee_pct = protocol_fee_pct
+        self.buyback_rate_pct = buyback_rate_pct
+        self.lp_expected_apr = lp_expected_apr
+        self.monthly_swap_pressure_pct = monthly_swap_pressure_pct
+        self.periods_in_year = periods_in_year
+        self.starting_credit_lines = starting_credit_lines
+        self.credit_utilization = credit_utilization
 
         self.df = pd.DataFrame()
     
