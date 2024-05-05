@@ -24,4 +24,9 @@ def merge(timestamp):
 
 
 if __name__ == "__main__":
-    merge("20240505-163334")
+    # parse cli arguments
+    if len(sys.argv) < 2:
+        print("Usage: python merge.py <timestamp>")
+        sys.exit(1)
+    timestamp = sys.argv[1]
+    merge(timestamp)

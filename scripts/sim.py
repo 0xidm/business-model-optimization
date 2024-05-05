@@ -101,7 +101,7 @@ def sim(num_processes=7):
     # split tasks into chunks of 100k and run sequentially
     task_chunks = [tasks[x:x+100_000] for x in range(0, len(tasks), 100_000)]
     for i, chunk in enumerate(task_chunks):
-        print(f"Running chunk {i+1}/{num_chunks}")
+        print(f"Running chunk {i+1}/{num_chunks} with {num_processes} processes")
         results = run_all(chunk, num_processes=num_processes)
         df = convert_to_dataframe(results)
         save(df, filename=os.path.join(path, f"{i:05d}.csv.gz"))

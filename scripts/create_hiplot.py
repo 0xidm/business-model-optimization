@@ -22,7 +22,12 @@ def plot(df, filename):
 
 
 if __name__ == "__main__":
-    timestamp = "20240505-163334"
+    # parse cli arguments
+    if len(sys.argv) < 2:
+        print("Usage: python create_hiplot.py <timestamp>")
+        sys.exit(1)
+    timestamp = sys.argv[1]
+
     path = os.path.abspath('.')
     df = load(os.path.join(path, f"var/{timestamp}/merged.csv.gz"))
     df = filter(df)
