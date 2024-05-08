@@ -35,6 +35,26 @@ class BusinessModel:
 
         self.df = pd.DataFrame()
     
+    @property
+    def slope(self):
+        return self._slope
+
+    @property
+    def break_even_month(self):
+        return self._break_even_month
+
+    @property
+    def treasury(self):
+        return self._treasury
+    
+    @property
+    def deposits(self):
+        return self._deposits
+    
+    @property
+    def sages(self):
+        return self._sages
+
     def run(self):
         ts = []
         for month in range(1, self.periods_in_simulation+1):
@@ -43,6 +63,9 @@ class BusinessModel:
         result = stats.linregress(ts)
         self._slope = result.slope
         self._break_even_month = self.find_break_even_month()
+        self._treasury = self.total_treasury(self.periods_in_simulation)
+        self._deposits = self.total_deposits(self.periods_in_simulation)
+        self._sages = self.total_sages(self.periods_in_simulation)
 
     def plot(self, filename="surplus.png"):
         ts = []
@@ -52,14 +75,6 @@ class BusinessModel:
         # create a plot and write to png
         df.plot(x='month', y='surplus', kind='line')
         plt.savefig(filename)
-
-    @property
-    def slope(self):
-        return self._slope
-
-    @property
-    def break_even_month(self):
-        return self._break_even_month
 
     @functools.cache
     def find_break_even_month(self):

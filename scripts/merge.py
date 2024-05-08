@@ -7,6 +7,7 @@ import gzip
 def merge(timestamp):
     path = os.path.join(os.path.abspath('.'), "var", timestamp)
     file_list = glob.glob(f"{path}/?????.csv.gz")
+    print(f"merging {len(file_list)} files from {path}")
 
     with gzip.open(f"{path}/merged.csv.gz","wb") as fout:
 

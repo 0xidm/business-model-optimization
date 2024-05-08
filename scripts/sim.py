@@ -26,10 +26,10 @@ from savvy import BusinessModel
 search_params = {
     "iteration": [0],
     "starting_deposits": [1_000_000],
-    "starting_pol": [0, 100_000, 250_000, 500_000],
+    "starting_pol": [0, 100_000, 250_000, 500_000, 1_000_000, 2_000_000],
     "protocol_fee_pct": [x / 100.0 for x in range(10, 50+1, 5)],
     "buyback_rate_pct": [x / 100.0 for x in range(0, 100+1, 10)],
-    "credit_utilization": [0.4, 0.5, 0.6],
+    "credit_utilization": [0.5],
     "average_user_yield": [x / 100.0 for x in range(5, 20+1, 5)],
     "average_protocol_yield": [x / 100.0 for x in range(5, 20+1, 5)],
     "monthly_swap_pressure_pct": [x / 100.0 for x in range(0, 100+1, 20)],
@@ -43,6 +43,9 @@ def run_one(iteration, *args):
     result = {
         "break_even_month": savvy_possibility.break_even_month,
         "slope": savvy_possibility.slope,
+        "treasury": savvy_possibility.treasury,
+        "deposits": savvy_possibility.deposits,
+        "sages": savvy_possibility.sages,
     }
     del savvy_possibility
     return result
@@ -66,6 +69,9 @@ def run_all(tasks, num_processes=7):
                 **dict(zip(variables, param)),
                 "break_even_month": savvy_possibility["break_even_month"],
                 "slope": savvy_possibility["slope"],
+                "treasury": savvy_possibility["treasury"],
+                "deposits": savvy_possibility["deposits"],
+                "sages": savvy_possibility["sages"],
             }
 
             results_accumulator.append(result)
