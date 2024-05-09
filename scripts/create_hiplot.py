@@ -12,7 +12,7 @@ def load(filename):
 def filter(df):
     print("filtering")
     # result = df.query("break_even_month >= 18 and slope > 50")
-    result = df.query("break_even_month >= 18")
+    result = df.query("break_even_month >= 12")
     print(f"filtered results: {result.shape[0]}")
     return result
 
