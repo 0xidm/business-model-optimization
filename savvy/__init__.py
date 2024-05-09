@@ -77,7 +77,7 @@ class BusinessModel:
 
     @functools.cache
     def current_lp_apr(self, month):
-        _current_tvl = self.total_treasury(self.periods_in_simulation) + self.total_sages(self.periods_in_simulation) + self.total_deposits(self.periods_in_simulation)
+        _current_tvl = self.tvl(month)
         apr_levels = [
             (3.477, 73.17),
             (4.129, 32.44),
@@ -98,7 +98,7 @@ class BusinessModel:
 
     @functools.cache
     def current_growth_pct(self, month):
-        _current_tvl = self.t
+        _current_tvl = self.tvl(month)
 
         if _current_tvl >= 50_000_000:
             _scaling_factor = 0.2

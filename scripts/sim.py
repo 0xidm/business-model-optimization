@@ -28,13 +28,14 @@ search_params = {
     "starting_deposits": [1_000_000],
     "growth_pct": [x / 100.0 for x in range(1, 15, 1)],
     "average_user_yield": [x / 100.0 for x in range(5, 20+1, 5)],
-    "starting_pol": [0, 100_000, 250_000],
+    "starting_pol": [0, 250_000, 500_000, 1_000_000, 2_000_000],
     "average_protocol_yield": [x / 100.0 for x in range(5, 20+1, 5)],
     "protocol_fee_pct": [x / 100.0 for x in range(10, 50+1, 5)],
     "buyback_rate_pct": [x / 100.0 for x in range(0, 100+1, 10)],
     "lp_expected_apr": [0.12],
     "monthly_swap_pressure_pct": [x / 100.0 for x in range(60, 100+1, 20)],
     "credit_utilization": [0.4, 0.5, 0.6],
+    # "credit_utilization": [0.5],
     # "expected_apr": [x / 100.0 for x in range(3, 15+1, 2)],
 }
 
