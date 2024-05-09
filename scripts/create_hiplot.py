@@ -23,7 +23,10 @@ def filter(df):
 
 def plot(df, filename):
     h = hip.Experiment.from_dataframe(df)
-    # h.parameters_definition["net_zero"].type = hip.ValueType.NUMERIC_LOG
+    h.parameters_definition["deposits"].type = hip.ValueType.NUMERIC_LOG
+    # h.parameters_definition["treasury"].type = hip.ValueType.NUMERIC_LOG
+    h.parameters_definition["sages"].type = hip.ValueType.NUMERIC_LOG
+    h.parameters_definition["tvl"].type = hip.ValueType.NUMERIC_LOG
     h.parameters_definition["starting_pol"].type = hip.ValueType.NUMERIC
     h.to_html(filename)
 
