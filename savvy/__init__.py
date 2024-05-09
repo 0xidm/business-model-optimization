@@ -18,7 +18,7 @@ logger.setLevel(logging.ERROR)
 
 
 class BusinessModel:
-    def __init__(self, starting_deposits, growth_pct, average_user_yield, starting_pol, average_protocol_yield, protocol_fee_pct, buyback_rate_pct, lp_expected_apr, monthly_swap_pressure_pct, credit_utilization=0.5, periods_in_year=12, periods_in_simulation=36):
+    def __init__(self, starting_deposits, growth_pct, average_user_yield, starting_pol, average_protocol_yield, protocol_fee_pct, buyback_rate_pct, lp_expected_apr, monthly_swap_pressure_pct, credit_utilization=0.5, periods_in_year=12, periods_in_simulation=48):
 
         self.starting_deposits = starting_deposits
         self.growth_pct = growth_pct
