@@ -88,9 +88,26 @@ def test_surplus(business_model):
     assert business_model.surplus(month=11) == pytest.approx(733, 10)
     assert business_model.surplus(month=12) == pytest.approx(683, 10)
 
+def test_tvl(business_model):
+    assert business_model.deposits == 4011895.0284079104
+    assert business_model.sages == 912568.5085223729
+    assert business_model.treasury == 1837206.748849249
+    assert business_model.tvl == 6761670.285779532
+
+def test_growth_pct(business_model):
+    assert business_model.growth_pct == 0.03
+
 def test_plot(business_model):
     business_model.run()
     business_model.plot('var/surplus.png')
+
+def test_finals(business_model):
+    assert business_model.break_even_month == 3
+    assert business_model.slope == -69.62405606474115
+    assert business_model.final_treasury == pytest.approx(1_837_207, 1)
+    assert business_model.final_deposits == pytest.approx(4_011_895, 1)
+    assert business_model.final_sages == pytest.approx(912_569, 1)
+    assert business_model.final_tvl == pytest.approx(6_761_670, 1)
 
 @pytest.fixture
 def business_model():

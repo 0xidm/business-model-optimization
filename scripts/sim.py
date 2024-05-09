@@ -22,19 +22,20 @@ logger.setLevel(logging.ERROR)
 
 from savvy import BusinessModel
 
-
+# the order of these params must match BusinessModel constructor
 search_params = {
     "iteration": [0],
     "starting_deposits": [1_000_000],
-    "starting_pol": [0, 100_000, 250_000, 500_000, 1_000_000, 2_000_000],
+    "growth_pct": [x / 100.0 for x in range(1, 15, 1)],
+    "average_user_yield": [x / 100.0 for x in range(5, 20+1, 5)],
+    "starting_pol": [0, 100_000, 250_000],
+    "average_protocol_yield": [x / 100.0 for x in range(5, 20+1, 5)],
     "protocol_fee_pct": [x / 100.0 for x in range(10, 50+1, 5)],
     "buyback_rate_pct": [x / 100.0 for x in range(0, 100+1, 10)],
-    "credit_utilization": [0.5],
-    "average_user_yield": [x / 100.0 for x in range(5, 20+1, 5)],
-    "average_protocol_yield": [x / 100.0 for x in range(5, 20+1, 5)],
-    "monthly_swap_pressure_pct": [x / 100.0 for x in range(0, 100+1, 20)],
-    "expected_apr": [x / 100.0 for x in range(9, 16+1, 2)],
-    "growth_pct": [x / 100.0 for x in range(1, 15, 1)],
+    "lp_expected_apr": [0.12],
+    "monthly_swap_pressure_pct": [x / 100.0 for x in range(60, 100+1, 20)],
+    "credit_utilization": [0.4, 0.5, 0.6],
+    # "expected_apr": [x / 100.0 for x in range(3, 15+1, 2)],
 }
 
 def run_one(iteration, *args):
@@ -43,9 +44,10 @@ def run_one(iteration, *args):
     result = {
         "break_even_month": savvy_possibility.break_even_month,
         "slope": savvy_possibility.slope,
-        "treasury": savvy_possibility.treasury,
-        "deposits": savvy_possibility.deposits,
-        "sages": savvy_possibility.sages,
+        "f_treasury": savvy_possibility.final_treasury,
+        "f_deposits": savvy_possibility.final_deposits,
+        "f_sages": savvy_possibility.final_sages,
+        "f_tvl": savvy_possibility.final_tvl,
     }
     del savvy_possibility
     return result
@@ -56,11 +58,13 @@ def prepare_tasks():
     print(f"Generated {len(permutations):_} tasks")
     return permutations
 
-def run_all(tasks, num_processes=7):
+def run_all(tasks, num_processes=7, quick=False):
     results_accumulator = []
     variables = list(search_params.keys())
     start_time = time.time()
-    # tasks = tasks[:100]
+
+    if quick:
+        tasks = tasks[:100]
 
     with Pool(processes=num_processes) as pool:
         results = pool.starmap(run_one, tasks)
@@ -69,9 +73,10 @@ def run_all(tasks, num_processes=7):
                 **dict(zip(variables, param)),
                 "break_even_month": savvy_possibility["break_even_month"],
                 "slope": savvy_possibility["slope"],
-                "treasury": savvy_possibility["treasury"],
-                "deposits": savvy_possibility["deposits"],
-                "sages": savvy_possibility["sages"],
+                "treasury": savvy_possibility["f_treasury"],
+                "deposits": savvy_possibility["f_deposits"],
+                "sages": savvy_possibility["f_sages"],
+                "tvl": savvy_possibility["f_tvl"],
             }
 
             results_accumulator.append(result)
@@ -93,7 +98,7 @@ def save(df, filename):
     df.to_csv(filename, index=False)
     print("Done")
 
-def sim(num_processes=7):
+def sim(num_processes=7, quick=False):
     results_accumulator = []
     tasks = prepare_tasks()
 
@@ -107,10 +112,12 @@ def sim(num_processes=7):
     # split tasks into chunks of 100k and run sequentially
     task_chunks = [tasks[x:x+100_000] for x in range(0, len(tasks), 100_000)]
     for i, chunk in enumerate(task_chunks):
-        print(f"Running chunk {i+1}/{num_chunks} with {num_processes} processes")
-        results = run_all(chunk, num_processes=num_processes)
+        print(f"Running chunk {i}/{num_chunks} with {num_processes} processes")
+        results = run_all(chunk, num_processes=num_processes, quick=quick)
         df = convert_to_dataframe(results)
         save(df, filename=os.path.join(path, f"{i:05d}.csv.gz"))
+        if quick:
+            break
 
 
 if __name__ == "__main__":
@@ -118,4 +125,5 @@ if __name__ == "__main__":
     num_processes = 7
     if len(sys.argv) > 1:
         num_processes = int(sys.argv[1])
-    sim(num_processes)
+#     sim(num_processes, quick=True)
+    sim(num_processes, quick=False)

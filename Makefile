@@ -2,10 +2,10 @@ sim:
 	.python/bin/python3 scripts/sim.py 7
 
 merge:
-	@echo usage: .python/bin/python scripts/merge.py 20240505-163334
+	.python/bin/python scripts/merge.py
 
 hiplot:
-	@echo usage: .python/bin/python scripts/create_hiplot.py 20240508-114851
+	.python/bin/python scripts/create_hiplot.py
 
 plot:
 	.python/bin/python scripts/plot.py

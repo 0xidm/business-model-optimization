@@ -27,8 +27,12 @@ def merge(timestamp):
 
 if __name__ == "__main__":
     # parse cli arguments
-    if len(sys.argv) < 2:
-        print("Usage: python merge.py <timestamp>")
-        sys.exit(1)
-    timestamp = sys.argv[1]
+    if len(sys.argv) == 2:
+        timestamp = sys.argv[1]
+    else:
+        # find the directory with the most recent timestamp
+        path = os.path.join(os.path.abspath('.'), "var")
+        dirs = sorted([d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))])
+        timestamp = dirs[-1]
+
     merge(timestamp)
