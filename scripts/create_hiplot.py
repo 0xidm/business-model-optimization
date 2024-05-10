@@ -13,7 +13,7 @@ def filter(df):
     print("filtering")
     # result = df.query("break_even_month >= 18 and slope > 50")
     # result = df.query("break_even_month >= 12")
-    result = df.query("slope > 0 & tvl > 30_000_000 & treasury > 0")
+    result = df.query("slope > 0 & tvl > 125_000_000 & treasury > 0")
     if "break_even_month" in result.columns:
         result = result.drop(columns=["break_even_month"])
     if "slope" in result.columns:

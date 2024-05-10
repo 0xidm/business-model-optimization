@@ -26,7 +26,7 @@ from savvy import BusinessModel
 search_params = {
     "iteration": [0],
     "starting_deposits": [1_000_000],
-    "starting_growth_pct": [x / 100.0 for x in range(2, 15, 1)],
+    "starting_growth_pct": [x / 100.0 for x in range(2, 30, 2)],
     "average_user_yield": [x / 100.0 for x in range(7, 11+1, 1)],
     "starting_pol": [0, 500_000, 1_000_000, 2_000_000],
     "average_protocol_yield": [x / 100.0 for x in range(12, 16+1, 1)],
