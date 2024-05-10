@@ -1,6 +1,6 @@
 # Savvy Business Model Optimization
 
-https://idm-savvy.github.io/business-model-optimization/result-20240509-125238.html
+https://idm-savvy.github.io/business-model-optimization/result-20240510-121136.html
 
 ## An example configuration
 

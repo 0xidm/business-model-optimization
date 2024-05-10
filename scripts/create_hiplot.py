@@ -13,7 +13,7 @@ def filter(df):
     print("filtering")
     # result = df.query("break_even_month >= 18 and slope > 50")
     # result = df.query("break_even_month >= 12")
-    result = df.query("slope > 0")
+    result = df.query("slope > 0 & tvl > 30_000_000 & treasury > 0")
     if "break_even_month" in result.columns:
         result = result.drop(columns=["break_even_month"])
     if "slope" in result.columns:
@@ -24,10 +24,10 @@ def filter(df):
 def plot(df, filename):
     h = hip.Experiment.from_dataframe(df)
     h.parameters_definition["deposits"].type = hip.ValueType.NUMERIC_LOG
-    # h.parameters_definition["treasury"].type = hip.ValueType.NUMERIC_LOG
-    h.parameters_definition["sages"].type = hip.ValueType.NUMERIC_LOG
-    h.parameters_definition["tvl"].type = hip.ValueType.NUMERIC_LOG
     h.parameters_definition["starting_pol"].type = hip.ValueType.NUMERIC
+    # h.parameters_definition["treasury"].type = hip.ValueType.NUMERIC_LOG
+    # h.parameters_definition["sages"].type = hip.ValueType.NUMERIC_LOG
+    # h.parameters_definition["tvl"].type = hip.ValueType.NUMERIC_LOG
     h.to_html(filename)
 
 
