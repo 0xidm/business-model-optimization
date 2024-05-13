@@ -1,0 +1,80 @@
+---
+title: "Model Projections"
+author: "idm"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+---
+title: "Savvy Model Projections"
+author: "idm"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library('tidyverse')
+library(scales)
+```
+
+```{r}
+df_base = read.csv('base-case.csv')
+df_base_t = data.frame(t(df_base))
+
+df_worst = read.csv('worst-case.csv')
+df_worst_t = data.frame(t(df_worst))
+
+df_best = read.csv('best-case.csv')
+df_best_t = data.frame(t(df_best))
+```
+
+```{r}
+df_deposits = data.frame(base=df_base_t$X8, best=df_best_t$X8, worst=df_worst_t$X8)
+df_deposits = df_deposits[17:99,]
+df_deposits = df_deposits[!duplicated(df_deposits), ]
+df_deposits = na.omit(df_deposits)
+df_deposits$date = seq(ymd('2024-01-01'), ymd('2029-12-31'), by='1 month')
+
+df_plot = pivot_longer(df_deposits, cols=c("base", "best", "worst"))
+df_plot$value = as.numeric(gsub(",", "", df_plot$value))
+
+# View(df_plot)
+```
+
+```{r}
+ggplot(data=df_plot, aes(x=date, y=value, color=name)) + 
+  geom_line() +
+  ggtitle("Savvy Model Scenarios: Deposits over time") +
+  ylab("Deposits (USD)") +
+  scale_y_continuous(label=comma) +
+  theme_minimal()
+
+ggsave("scenarios-deposits.jpg")
+```
+
+```{r}
+df_surplus = data.frame(base=df_base_t$X47, best=df_best_t$X47, worst=df_worst_t$X47)
+df_surplus = df_surplus[17:99,]
+df_surplus = na.omit(df_surplus)
+
+# remove every 13th row
+n=13
+df_surplus = df_surplus[-seq(n, NROW(df_surplus), by = n),]
+df_surplus$date = seq(ymd('2024-01-01'), ymd('2029-12-31'), by='1 month')
+
+df_plot = pivot_longer(df_surplus, cols=c("base", "best", "worst"))
+df_plot$value = as.numeric(sub(")", "", sub("(", "-", gsub(",", "", df_plot$value), fixed=TRUE), fixed=TRUE))
+# View(df_plot)
+```
+
+```{r}
+ggplot(data=df_plot, aes(x=date, y=value, color=name)) + 
+  geom_line() +
+  ggtitle("Savvy Model Scenarios: LP Cost vs Buybacks Surplus") +
+  ylab("Deposits (USD)") +
+  scale_y_continuous(label=comma) +
+  theme_minimal()
+
+ggsave("scenarios-surplus.jpg")
+```
